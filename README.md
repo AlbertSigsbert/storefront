@@ -1,0 +1,2 @@
+# Storefront
+ Django storefront App

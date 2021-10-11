@@ -1,11 +1,25 @@
 from django.contrib import admin
+from django.db.models.aggregates import Count
 from . import models
 
 # Register your models here.
 
 #Registering collection model
-admin.site.register(models.Collection)
+# admin.site.register(models.Collection)
+@admin.register(models.Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    list_display = ['title', 'products_count']
 
+    @admin.display(ordering='products_count')
+    def products_count(self, collection):
+        return collection.products_count
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            products_count = Count('product')
+        )
+
+     
 '''
 Registering product model using decorator
 and ProductAdmin Class for its customization

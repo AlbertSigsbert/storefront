@@ -31,11 +31,24 @@ class CollectionAdmin(admin.ModelAdmin):
 Registering product model using decorator
 and ProductAdmin Class for its customization
 '''
+class InventoryFilter(admin.SimpleListFilter):
+    title = 'Inventory'
+    parameter_name = 'inventory'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('<10' , 'Low')
+        ]
+    def queryset(self, request, queryset):
+        return queryset.filter(inventory__lt = 10)
+
+      
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['title', 'unit_price', 'inventory_status', 'collection']
     list_editable = ['unit_price']
     list_per_page = 10
+    list_filter = ['collection', 'last_update',InventoryFilter]
 
     @admin.display(ordering='inventory')
     def inventory_status(self, product):

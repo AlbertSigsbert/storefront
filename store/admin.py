@@ -64,6 +64,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['unit_price']
     list_per_page = 10
     list_filter = ['collection', 'last_update',InventoryFilter]
+    search_fields = ['title']
  
 
     @admin.display(ordering='inventory')
@@ -117,10 +118,17 @@ class CustomerAdmin(admin.ModelAdmin):
 #     def customer_name(self, order):
 #         return order.customer.first_name+' '+order.customer.last_name
       
+class OrderItemInline(admin.TabularInline):
+    model = models.OrderItem
+    autocomplete_fields = ['product']
+    extra = 0
+    min_num = 1
+    max_num = 10
 
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
     autocomplete_fields = ['customer']
+    inlines = [OrderItemInline]
     list_display = ['placed_at', 'payment_status', 'customer']
     list_editable = ['payment_status']
     ordering = ['placed_at']

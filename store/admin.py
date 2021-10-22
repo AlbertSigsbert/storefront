@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.contrib.admin.decorators import action
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models.aggregates import Count
 from django.utils.html import format_html,urlencode
 from django.urls import reverse
+
+from tags.models import TaggedItem
 from . import models
 
 # Register your models here.
@@ -48,7 +51,13 @@ class InventoryFilter(admin.SimpleListFilter):
          if self.value() == '>10':
             return queryset.filter(inventory__gt = 10)
 
-      
+class TagInline(GenericTabularInline):
+    model =TaggedItem
+    autocomplete_fields = ['tag']
+    extra = 0
+    min_num = 1
+
+         
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     #prepolute slug field with title
@@ -60,6 +69,7 @@ class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['collection']
 
     actions = ['clear_inventory']
+    inlines = [TagInline]
     list_display = ['title', 'unit_price', 'inventory_status', 'collection']
     list_editable = ['unit_price']
     list_per_page = 10
